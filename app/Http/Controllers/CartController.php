@@ -39,7 +39,7 @@ class CartController extends Controller
 
         $productsInTheCart = [
             'cart_items' => $cart_items,
-            'cart_total' => $total,
+            'cart_total' => $cart_items[0]->total,
             'cart_id'    => $cart->id,
         ];
 
@@ -51,84 +51,54 @@ class CartController extends Controller
     }
 
     public function addToCart(Request $request)
-    {
-        Cart::find(Session::get('cart_id'));
+{
+    Cart::find(Session::get('cart_id'));
 
-        if (!$request->product_id) {
-            return redirect(route('home'));
-        }
-
-        try {
-            $product = Product::where('id', $request->product_id)->first();
-        } catch (ModelNotFoundException $e) {
-            Log::info('error 1');
-            abort(404);
-        }
-
-        if ($cartId = Session::get('cart_id')) {
-            $cartExists = Cart::where('id', $cartId)->exists();
-            if (!$cartExists) {
-                Session::forget('cart_id');
-
-                if (!($cartId = Session::get('cart_id'))) {
-
-                    $cart = Cart::create([
-                        'created_at' => Carbon::now()->toIso8601String(),
-                    ], ['id']);
-                    $cartId = $cart->id;
-
-                    Session::put('cart_id', $cartId);
-                }
-            }
-        } else {
-            $cart = Cart::create([
-                'created_at' => Carbon::now()->toIso8601String(),
-            ], ['id']);
-            $cartId = $cart->id;
-
-            Session::put('cart_id', $cartId);
-        }
-
-
-        $cart = Cart::where('id', $cartId)->get()->first();
-
-        if (CartItem::where('cart_id', $cartId)->where('product_id', $product->id)->exists()) {
-            Log::info('product is already in cart');
-
-            return redirect(route('cart.get'));
-        }
-
-        try {
-            $cartUpdated = CartItem::insert([
-                'cart_id'    => $cartId,
-                'product_id' => $product->id,
-                'price'      => $product->price,
-            ]);
-
-            if ($cartUpdated) {
-                if ($cart instanceof Cart) {
-
-                    $items = $cart->cartItems->map(fn(CartItem $cartItem) => [
-                        'id'    => $cartItem->product->id,
-                        'name'  => $cartItem->product->name,
-                        'price' => $cartItem->product->price,
-                    ]);
-
-                    $total = null;
-                    foreach ($items as $item) {
-                        $total += $item['price'];
-                    }
-                    $cart->update(['total' => $total]);
-                }
-            }
-
-        } catch (\Throwable $e) {
-            Log::info('error ----2');
-        }
-
-
-        return redirect(route('cart.get'));
+    if (!$request->product_id) {
+        return redirect(route('home'));
     }
+
+    try {
+        $product = Product::findOrFail($request->product_id);
+    } catch (ModelNotFoundException $e) {
+        Log::info('Product not found');
+        abort(404);
+    }
+
+    // Check if there's an existing cart
+    $cartId = Session::get('cart_id');
+    if (!$cartId) {
+        $cart = Cart::create([
+            'created_at' => Carbon::now()->toIso8601String(),
+        ]);
+        $cartId = $cart->id;
+        Session::put('cart_id', $cartId);
+    } else {
+        $cart = Cart::findOrFail($cartId);
+    }
+
+    // Check if the cart already has items with a different breed
+    $existingBreed = $cart->cartItems()->whereHas('product', function ($query) use ($product) {
+        $query->where('breed_id', '!=', $product->breed_id);
+    })->exists();
+
+    if ($existingBreed) {
+        return back()->with('error', 'You cannot add products with different breeds to the same cart.');
+    }
+
+    // Add the product to the cart
+    $cartItem = CartItem::create([
+        'cart_id'    => $cartId,
+        'product_id' => $product->id,
+        'price'      => $product->price,
+    ]);
+
+    // Update cart total
+    $cart->update(['total' => $cart->cartItems->sum('price')]);
+
+    return redirect(route('cart.get'));
+}
+
 
     public function removeFromCart(Request $request)
     {
