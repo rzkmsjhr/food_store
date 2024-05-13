@@ -40,7 +40,7 @@
             <div class="row m-0 justify-content-end">
                 <div class="cart-table-total">
                     <div class="total">
-                        <span>Total:</span> <span class="price-wrapper">${{$item->total}}</span>
+                        <span>Total:</span> <span class="price-wrapper">${{$cart_total}}</span>
                     </div>
                 </div>
             </div>

@@ -35,9 +35,11 @@ class CartController extends Controller
             return redirect()->route('home');
         }
 
+        $total = $cart_items->sum('price'); // Calculate total price
+
         $productsInTheCart = [
             'cart_items' => $cart_items,
-            'cart_total' => $cart_items[0]->total,
+            'cart_total' => $total,
             'cart_id'    => $cart->id,
         ];
 
