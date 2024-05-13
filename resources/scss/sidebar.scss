@@ -1,0 +1,23 @@
+.sidebar-div {
+    .navbar {
+        .navbar-collapse {
+            display: block !important;
+
+            .nav-item:hover {
+                background-color: rgba(210, 210, 210, 0.25);
+                opacity: 1;
+                cursor: pointer;
+            }
+
+            .nav-link {
+                display: block;
+                font-size: 13px;
+                color: #212122;
+                font-weight: 700;
+                border-bottom: 1px solid rgba(210, 210, 210, 0.25);
+                padding: 8px 0.75rem;
+                text-shadow: 0 1px 0 rgb(255 255 255 / 50%);
+            }
+        }
+    }
+}

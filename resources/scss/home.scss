@@ -1,0 +1,52 @@
+.product-table {
+    .table-header {
+        th {
+            padding: 5px;
+        }
+        background-color: lightgray;
+
+        .product-number {
+            min-width: 200px;
+        }
+
+        .product-name {
+            min-width: 350px;
+        }
+
+        .product-price {
+            min-width: 350px;
+        }
+
+        .product-breed {
+            min-width: 200px;
+        }
+    }
+
+    .product-table-body {
+        td {
+            padding: 10px;
+        }
+        .odd {
+            background-color: #e4dede;
+        }
+        .even {
+            background-color: #e6f7fd;
+        }
+        .add-to-cart-btn {
+            min-width: 150px;
+            .info-btn {
+                background: #0eb4eb none repeat scroll 0 0;
+                color: #fff;
+                font-size: 14px;
+                font-weight: 700;
+                padding: 4px 8px;
+                display: inline-block;
+                margin-right: 10px;
+                text-align: center;
+                border-radius: 0px;
+                border: none;
+            }
+        }
+    }
+}
+

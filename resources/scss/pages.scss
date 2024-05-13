@@ -1,0 +1,36 @@
+.cart-content {
+    .cart-table {
+        .cart-table-heading {
+            background: rgba(50, 62, 75, 0.2);
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .cart-table-body {
+            background: #f6f6f6;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px 0 0;
+
+            .remove-item {
+                color: #EE7672;
+                border: none;
+                padding: 0;
+                background: none;
+            }
+        }
+
+        .cart-table-total {
+            width: auto;
+            background: rgba(50, 62, 75, 0.2);
+            padding: 10px;
+            border-radius: 10px;
+            float: right;
+            margin-top: 10px;
+            text-align: right;
+        }
+    }
+}
