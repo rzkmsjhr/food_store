@@ -10,7 +10,7 @@ class HomeController extends Controller
     //
     public function home(Request $request)
     {
-        $products = Product::with('breeds')->get();
+        $products = Product::with('breeds')->paginate(20);
 
         return view('pages.home',[
             'products' => $products,

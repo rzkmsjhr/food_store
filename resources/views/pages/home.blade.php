@@ -21,16 +21,17 @@
                 @endif
 
                 <tr class="{{$class}}">
-                    <td>{{$key+1}}</td>
-                    <td><a name="{{$row['id']}}"></a><strong>{{$row['name']}}</strong></td>
-                    <td>${{$row['price']}}</td>
-                    <td>{{$row->breeds->name}}</td>
-                    <td class="add-to-cart-btn">
-                        <x-add-to-cart price="{{$row['price']}}" href="{{$row['id']}}"/>
-                    </td>
-                </tr>
+                <td>{{ $products->firstItem() + $key }}</td>
+                <td><a name="{{$row['id']}}"></a><strong>{{$row['name']}}</strong></td>
+                <td>${{$row['price']}}</td>
+                <td>{{$row->breeds->name}}</td>
+                <td class="add-to-cart-btn">
+                    <x-add-to-cart price="{{$row['price']}}" href="{{$row['id']}}"/>
+                </td>
+            </tr>
             @endforeach
             </tbody>
         </table>
+        {{ $products->links() }}
     </div>
 @endsection
