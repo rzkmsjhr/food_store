@@ -4,6 +4,10 @@
 <div class="container mt-5">
         <h1>Admin Dashboard</h1>
         <a href="{{ route('admin.coupons.create') }}" class="btn btn-primary mb-3">Add Coupon</a>
+        <form action="{{ route('admin.logout') }}" method="POST" style="display:inline; float:right;">
+        @csrf
+        <button type="submit" class="btn btn-secondary mb-3">Logout</button>
+    </form>
         <table class="table table-bordered">
             <thead>
                 <tr>

@@ -20,4 +20,5 @@ Route::prefix('secret')->middleware('auth')->group(function () {
     Route::get('admin/coupons/{id}/edit', [AdminController::class, 'editCoupon'])->name('admin.coupons.edit');
     Route::put('admin/coupons/{id}', [AdminController::class, 'updateCoupon'])->name('admin.coupons.update');
     Route::delete('admin/coupons/{id}', [AdminController::class, 'destroyCoupon'])->name('admin.coupons.destroy');
+    Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
 });
