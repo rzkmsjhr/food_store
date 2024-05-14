@@ -45,7 +45,7 @@
         <div class="col-lg-2 col-md-3 sidebar-div">
             @include('layouts.sidebar')
         </div>
-        <div class="col-lg-9 col-md-9 ps-lg-5 ps-md-5 ps-sm-3">
+        <div class="col-lg-9 col-md-12 table-class">
         @if(session('error'))
                 <!-- The Modal -->
                 <div id="myModal" class="modal">

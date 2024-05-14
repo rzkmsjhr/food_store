@@ -48,7 +48,7 @@
         </div>
 
         <div class="row mt-4">
-            <div class="col-10">
+            <div class="col-md-10 col-9">
                 <form method="post" action="{{route('cart.applyCoupon')}}">
                     @csrf
                     <div class="input-group mb-3">
@@ -57,7 +57,7 @@
                     </div>
                 </form>
             </div>
-            <div class="col-2">
+            <div class="col-md-2 col-3">
                 <form method="post" action="{{route('cart.save')}}">
                     @csrf
                     <input type="hidden" name="cart_id" value="{{ Session::get('cart_id') }}">
