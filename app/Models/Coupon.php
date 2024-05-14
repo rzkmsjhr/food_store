@@ -9,5 +9,9 @@ class Coupon extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'code',
+        'type',
+        'discount_amount',
+    ];
 }
