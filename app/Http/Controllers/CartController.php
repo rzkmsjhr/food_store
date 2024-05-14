@@ -119,9 +119,9 @@ public function removeFromCart(Request $request)
 
 public function applyCoupon(Request $request)
 {
-    $coupon = Coupon::where('code', $request->coupon_code)->first();
+    $coupon = Coupon::where('code', $request->coupon_code)->where('status', 'active')->first();
     if (!$coupon) {
-        return redirect()->back()->with('error', 'Invalid coupon code.');
+        return redirect()->back()->with('error', 'Invalid coupon code or the coupon is not active.');
     }
 
     $cart = Cart::find(Session::get('cart_id'));

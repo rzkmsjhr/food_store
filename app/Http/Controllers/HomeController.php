@@ -16,4 +16,9 @@ class HomeController extends Controller
             'products' => $products,
         ]);
     }
+
+    public function showLoginForm()
+    {
+        return view('pages.admin.login');
+    }
 }

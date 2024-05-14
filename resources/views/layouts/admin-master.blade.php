@@ -85,5 +85,24 @@
 <footer>
 </footer>
 <script src="{{ mix('js/app.js') }}" defer></script>
+<script>
+        function toggleDiscountAmount() {
+            const type = document.getElementById('type').value;
+            const discountAmountDiv = document.getElementById('discountAmountDiv');
+            const discountAmountInput = document.getElementById('discount_amount');
+            if (type === 'magical') {
+                discountAmountDiv.style.display = 'none';
+                discountAmountInput.value = '';
+                discountAmountInput.removeAttribute('required');
+            } else {
+                discountAmountDiv.style.display = 'block';
+                discountAmountInput.setAttribute('required', 'required');
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            toggleDiscountAmount(); // Run this on page load to set initial state
+        });
+</script>
 </body>
 </html>

@@ -42,19 +42,53 @@ class AdminController extends Controller
 
     public function storeCoupon(Request $request)
 {
-    $request->validate([
-        'code' => 'required|unique:coupons,code|max:255',
-        'type' => 'required|in:absolute,percent,magical',
-        'discount_amount' => 'required|numeric',
+    $data = $request->validate([
+        'code' => 'required|string|max:255|unique:coupons,code',
+        'type' => 'required|string',
+        'discount_amount' => 'nullable|numeric',
+        'status' => 'required|in:active,inactive',
     ]);
 
-    Coupon::create([
-        'code' => $request->input('code'),
-        'type' => $request->input('type'),
-        'discount_amount' => $request->input('discount_amount'),
-    ]);
+    if ($data['type'] === 'magical') {
+        $data['discount_amount'] = null;
+    }
+
+    Coupon::create($data);
 
     return redirect()->route('admin.dashboard')->with('success', 'Coupon added successfully!');
+}
+
+public function editCoupon($id)
+{
+    $coupon = Coupon::findOrFail($id);
+    return view('pages.admin.edit-coupon', compact('coupon'));
+}
+
+    public function updateCoupon(Request $request, $id)
+    {
+        $data = $request->validate([
+            'code' => 'required|string|max:255|unique:coupons,code,' . $id,
+            'type' => 'required|string',
+            'discount_amount' => 'nullable|numeric',
+            'status' => 'required|in:active,inactive',
+        ]);
+
+        if ($data['type'] === 'magical') {
+            $data['discount_amount'] = null;
+        }
+
+        $coupon = Coupon::findOrFail($id);
+        $coupon->update($data);
+
+        return redirect()->route('admin.dashboard')->with('success', 'Coupon updated successfully.');
+    }
+
+public function destroyCoupon($id)
+{
+    $coupon = Coupon::findOrFail($id);
+    $coupon->delete();
+
+    return redirect()->route('admin.dashboard')->with('success', 'Coupon deleted successfully!');
 }
 
 }
