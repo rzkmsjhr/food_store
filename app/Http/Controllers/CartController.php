@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
+use App\Models\Coupon;
 use Carbon\Carbon;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Collection;
@@ -100,12 +101,99 @@ class CartController extends Controller
 }
 
 
-    public function removeFromCart(Request $request)
-    {
-        $cartItem = CartItem::with('cart')->where('id', $request->item)->first();
-        $cartItem->delete();
+public function removeFromCart(Request $request)
+{
+    $cartItem = CartItem::with('cart')->where('id', $request->item)->first();
 
-        return redirect(route('cart.get'));
+    // Calculate the new total after removing the item
+    $newTotal = $cartItem->cart->total - $cartItem->price;
+
+    // Update the cart's total
+    $cartItem->cart->update(['total' => $newTotal]);
+
+    // Delete the cart item
+    $cartItem->delete();
+
+    return redirect(route('cart.get'));
+}
+
+public function applyCoupon(Request $request)
+{
+    $coupon = Coupon::where('code', $request->coupon_code)->first();
+    if (!$coupon) {
+        return redirect()->back()->with('error', 'Invalid coupon code.');
+    }
+
+    $cart = Cart::find(Session::get('cart_id'));
+    $cartTotal = $cart->cartItems->sum('price');
+    
+    // Check if the current coupon is already applied
+    if (Session::has('coupon_id') && Session::get('coupon_id') == $coupon->id) {
+        return redirect()->back()->with('error', 'This coupon has already been applied.');
+    }
+
+    // Check if a bigger discount coupon is available
+    if (Session::has('discounted_total')) {
+        $existingCoupon = Coupon::find(Session::get('coupon_id'));
+        if ($coupon->discount_amount > $existingCoupon->discount_amount) {
+            $discountedTotal = $this->calculateDiscount($coupon, $cartTotal);
+
+            // Update the session with the new coupon and discounted total
+            Session::put('discounted_total', $discountedTotal);
+            Session::put('coupon_id', $coupon->id);
+            return redirect()->back()->with('success', 'Coupon applied successfully.');
+        } else {
+            return redirect()->back()->with('error', 'A bigger discount coupon is already applied.');
+        }
+    }
+
+    // If no coupon has been applied yet, apply the current one
+    $discountedTotal = $this->calculateDiscount($coupon, $cartTotal);
+
+    // Store the discounted total and coupon ID in the session
+    Session::put('discounted_total', $discountedTotal);
+    Session::put('coupon_id', $coupon->id);
+    
+    return redirect()->back()->with('success', 'Coupon applied successfully.');
+}
+
+
+    private function calculateDiscount(Coupon $coupon, $cartTotal)
+    {
+        switch ($coupon->type) {
+            case 'absolute':
+                return max(0, $cartTotal - $coupon->discount_amount);
+            case 'percent':
+                return max(0, $cartTotal - ($coupon->discount_amount / 100) * $cartTotal);
+            case 'magical':
+                $dateSum = date('Y') + date('m') + date('d');
+                $discount = $dateSum % 2 === 0 ? 10 : 15;
+                return max(0, $cartTotal - $discount);
+            default:
+                return $cartTotal;
+        }
+    }
+
+    public function saveCart(Request $request)
+    {
+        $cartId = $request->input('cart_id');
+        $couponId = $request->input('coupon_id');
+        $discountedTotal = $request->input('discounted_total');
+
+        // Save the cart details if necessary
+        $cart = Cart::find($cartId);
+        if ($cart) {
+            $cart->coupon_id = $couponId;
+            $cart->total = $discountedTotal;
+            $cart->save();
+        }
+
+        // Clear the session values after saving
+        Session::forget('coupon_id');
+        Session::forget('discounted_total');
+        Session::forget('cart_id');
+
+        return redirect(route('cart.get'))->with('success', 'Cart saved successfully.');
     }
 
 }

@@ -27,5 +27,11 @@ class CouponsTableSeeder extends Seeder
             'type' => 'percent',
             'discount_amount' => 20.00,
         ]);
+
+        // Create magic coupon
+        Coupon::create([
+            'code' => 'MAGIC',
+            'type' => 'magical',
+        ]);
     }
 }
